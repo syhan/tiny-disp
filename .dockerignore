@@ -1,0 +1,48 @@
+# Git files
+.git
+.gitignore
+
+# Python cache
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info
+dist
+build
+
+# IDE files
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# macOS files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Documentation (not needed in runtime)
+docs/
+*.md
+!README.md
+
+# Legacy code (not needed in runtime)
+legacy/
+
+# Configuration (will be mounted)
+.tiny-disp.conf
+
+# Service files (not needed in container)
+*.service
+install-service.sh
+
+# Test files
+test/
+tests/
+*_test.py
+test_*.py

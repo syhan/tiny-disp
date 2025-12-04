@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  tiny-disp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: tiny-disp:latest
+    container_name: tiny-disp
+
+    # Privileged mode for USB device access
+    privileged: true
+
+    # Mount USB devices
+    devices:
+      - /dev/ttyUSB0:/dev/ttyUSB0
+      # Add more devices as needed
+      # - /dev/ttyACM0:/dev/ttyACM0
+      # - /dev/cu.usbmodem*:/dev/cu.usbmodem*
+
+    # Volume mounts
+    volumes:
+      # Mount configuration file
+      - ./.tiny-disp.conf:/app/.tiny-disp.conf:ro
+      # Optional: mount logs directory
+      # - ./logs:/app/logs
+
+    # Environment variables
+    environment:
+      - PYTHONUNBUFFERED=1
+      - TZ=Asia/Shanghai
+      # Plugin selection - use plugin filename
+      # Leave empty for interactive mode
+      # Examples: plugin_clock, plugin_metrics, plugin_sample
+      - PLUGIN_FILE=plugin_metrics
+
+    # Restart policy
+    restart: unless-stopped
+
+    # Command - will use PLUGIN_FILE environment variable
+    command: ["sh", "-c", "python3 main.py $${PLUGIN_FILE:+--plugin $$PLUGIN_FILE}"]
+
+    # Network mode
+    network_mode: host
+
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"

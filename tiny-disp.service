@@ -1,0 +1,20 @@
+[Unit]
+Description=Tiny Display Service
+Documentation=https://github.com/your-repo/tiny-disp
+After=network.target
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi/tiny-disp
+ExecStart=/usr/bin/python3 /home/pi/tiny-disp/main.py --plugin "System Metrics"
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+# Environment variables (if needed)
+#Environment="PYTHONUNBUFFERED=1"
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,16 @@
+# MSC Device Display Scripts - Python Dependencies
+
+# Serial communication
+pyserial==3.5
+
+# System monitoring
+psutil==5.9.8
+
+# HTTP requests for weather data
+requests==2.31.0
+
+# Timezone support for world clock
+pytz==2024.1
+
+# Image processing for map display
+Pillow==10.4.0

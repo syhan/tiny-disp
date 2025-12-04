@@ -1,0 +1,129 @@
+# Tiny Display Configuration File
+# 配置文件说明：修改此文件后重启程序生效
+# 复制此文件为 .tiny-disp.conf 并根据需要修改配置
+
+[general]
+# General Configuration / 通用配置
+# Log level / 日志级别: DEBUG, INFO, WARNING, ERROR, CRITICAL
+log_level = INFO
+
+# Default plugin to run / 默认运行的插件
+# Leave empty for interactive mode / 留空则进入交互模式
+# Use plugin filename (without .py extension) / 使用插件文件名（不含.py扩展名）
+# Examples: plugin_clock, plugin_metrics, plugin_sample
+default_plugin = plugin_metrics
+
+[clock]
+# World Clock Plugin Configuration / 世界时钟插件配置
+# Format: city_name = timezone
+# 格式：城市名称 = 时区
+# Timezone reference / 时区参考: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+cities = Shanghai:Asia/Shanghai,Berlin:Europe/Berlin,Vancouver:America/Vancouver,Washington:America/New_York
+
+# Example timezones / 时区示例:
+# Asia: Shanghai, Tokyo, Hong_Kong, Singapore, Dubai, Bangkok
+# Europe: London, Paris, Berlin, Moscow, Rome
+# Americas: New_York, Los_Angeles, Chicago, Toronto, Mexico_City, Sao_Paulo
+# Pacific: Sydney, Auckland, Fiji
+
+[weather]
+# Weather Plugin Configuration / 天气插件配置
+# Location for weather information / 天气信息位置
+location = Shanghai
+
+# Update interval in seconds (default: 600 = 10 minutes)
+# 更新间隔（秒），默认：600秒 = 10分钟
+update_interval = 600
+
+# Weather API configuration (if needed) / 天气API配置（如需要）
+# api_key = your_api_key_here
+# api_provider = openweathermap
+
+[zfs]
+# TrueNAS ZFS Plugin Configuration / TrueNAS ZFS插件配置
+# TrueNAS server connection / TrueNAS服务器连接
+host = 10.0.0.129
+user =
+password =
+port = 22
+
+# Pool name to monitor / 要监控的存储池名称
+pool_name = tank
+
+# Update interval in seconds (default: 15)
+# 更新间隔（秒），默认：15秒
+update_interval = 15
+
+[zfs_pages]
+# ZFS Multi-page Plugin Configuration / ZFS多页插件配置
+# Inherits connection settings from [zfs] section
+# 继承 [zfs] 部分的连接设置
+
+# Specific datasets to monitor (comma-separated)
+# 要监控的特定数据集（逗号分隔）
+datasets = archives,photos,music,videos
+
+# Auto-rotate page duration in seconds (default: 4)
+# 自动切换页面间隔（秒），默认：4秒
+page_duration = 4
+
+# Update interval in seconds (default: 1)
+# 更新间隔（秒），默认：1秒
+update_interval = 1
+
+[metrics]
+# System Metrics Plugin Configuration / 系统指标插件配置
+# Update interval in seconds (default: 10)
+# 更新间隔（秒），默认：10秒
+update_interval = 10
+
+# Display options / 显示选项
+# show_cpu = true
+# show_memory = true
+# show_disk = true
+# show_network = true
+
+[metrics_rotated]
+# System Metrics (Rotated) Plugin Configuration / 系统指标（旋转）插件配置
+# 90-degree rotated version of system metrics
+# 系统指标的90度旋转版本
+
+# Update interval in seconds (default: 10)
+# 更新间隔（秒），默认：10秒
+update_interval = 10
+
+# ============================================================
+# CONFIGURATION TIPS / 配置提示
+# ============================================================
+#
+# 1. Time Zones / 时区设置:
+#    - Use IANA timezone database names
+#    - 使用IANA时区数据库名称
+#    - Example: Asia/Shanghai, Europe/London
+#
+# 2. Update Intervals / 更新间隔:
+#    - Shorter intervals = more frequent updates
+#    - 间隔越短 = 更新越频繁
+#    - Balance between freshness and performance
+#    - 在新鲜度和性能之间取得平衡
+#
+# 3. Log Levels / 日志级别:
+#    - DEBUG: Detailed information for debugging
+#    - INFO: General informational messages (default)
+#    - WARNING: Warning messages
+#    - ERROR: Error messages
+#    - CRITICAL: Critical errors
+#
+# 4. SSH Configuration / SSH配置:
+#    - Ensure SSH key-based auth or password access
+#    - 确保SSH密钥认证或密码访问
+#    - Test connection: ssh user@host
+#    - 测试连接: ssh 用户@主机
+#
+# 5. Dataset Monitoring / 数据集监控:
+#    - List specific datasets to monitor
+#    - 列出要监控的特定数据集
+#    - Leave empty to monitor all datasets
+#    - 留空则监控所有数据集
+#
+# ============================================================

@@ -1,0 +1,9 @@
+__pycache__
+.git
+*.pyc
+.DS_Store
+
+# Configuration file with sensitive information
+.tiny-disp.conf
+# Keep the sample file in git
+!.tiny-disp.conf.sample
