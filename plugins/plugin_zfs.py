@@ -11,6 +11,9 @@ import serial
 from typing import Dict
 
 from lib.display_interface import DisplayPlugin
+from logger import get_logger
+
+logger = get_logger()
 from lib.msc_display_lib import (
     MSCDisplay,
     Colors,
@@ -53,12 +56,12 @@ class ZFSPlugin(DisplayPlugin):
         try:
             # Check if sshpass is installed
             if not self._check_sshpass():
-                print("❌ ERROR: sshpass is not installed!")
-                print("\nPlease install sshpass first:")
-                print("  On Debian/Ubuntu/Proxmox VE:")
-                print("    apt update && apt install sshpass -y")
-                print("  On macOS:")
-                print("    brew install sshpass")
+                logger.error(" ERROR: sshpass is not installed!")
+                logger.info("\nPlease install sshpass first:")
+                logger.info("  On Debian/Ubuntu/Proxmox VE:")
+                logger.info("    apt update && apt install sshpass -y")
+                logger.info("  On macOS:")
+                logger.info("    brew install sshpass")
                 return False
 
             self.display = MSCDisplay(self.ser)
@@ -66,18 +69,18 @@ class ZFSPlugin(DisplayPlugin):
             self.frame = 0
 
             # Test SSH connection
-            print(f"Testing SSH connection to {self.ssh_config['host']}...")
+            logger.info(f"Testing SSH connection to {self.ssh_config['host']}...")
             test_metrics = self._get_zfs_metrics()
             if test_metrics['online']:
-                print(f"✓ Connected to TrueNAS")
-                print(f"✓ Found pool: {test_metrics['name']}")
+                logger.info(f" Connected to TrueNAS")
+                logger.info(f" Found pool: {test_metrics['name']}")
             else:
-                print("⚠️  WARNING: Cannot connect to TrueNAS!")
-                print("Continuing with offline display...")
+                logger.warning("  WARNING: Cannot connect to TrueNAS!")
+                logger.info("Continuing with offline display...")
 
             return True
         except Exception as e:
-            print(f"ZFS plugin initialization error: {e}")
+            logger.error(f"ZFS plugin initialization Error: {e}")
             return False
 
     def update(self) -> bool:
@@ -89,7 +92,7 @@ class ZFSPlugin(DisplayPlugin):
             self.frame += 1
             return True
         except Exception as e:
-            print(f"ZFS update error: {e}")
+            logger.error(f"ZFS update Error: {e}")
             return False
 
     def cleanup(self):
@@ -181,7 +184,7 @@ class ZFSPlugin(DisplayPlugin):
             }
 
         except Exception as e:
-            print(f"Error getting ZFS metrics: {e}")
+            logger.info(f"Error getting ZFS metrics: {e}")
             return self._get_default_metrics()
 
     def _get_default_metrics(self) -> Dict:
@@ -280,4 +283,4 @@ class ZFSPlugin(DisplayPlugin):
 
         send_keep_alive(self.ser)
 
-        print(f"💾 [ZFS] Pool:{metrics['name']} Cap:{metrics['cap']}% Health:{metrics['health']} Free:{metrics['free']}")
+        logger.info(f"💾 [ZFS] Pool:{metrics['name']} Cap:{metrics['cap']}% Health:{metrics['health']} Free:{metrics['free']}")

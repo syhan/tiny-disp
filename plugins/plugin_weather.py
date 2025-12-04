@@ -10,6 +10,9 @@ import requests
 import serial
 
 from lib.display_interface import DisplayPlugin
+from logger import get_logger
+
+logger = get_logger()
 from lib.msc_display_lib import (
     MSCDisplay,
     Colors,
@@ -44,7 +47,7 @@ class WeatherPlugin(DisplayPlugin):
             self.display.set_orientation(landscape=True)
             return True
         except Exception as e:
-            print(f"Weather plugin initialization error: {e}")
+            logger.error(f"Weather plugin initialization Error: {e}")
             return False
 
     def update(self) -> bool:
@@ -56,7 +59,7 @@ class WeatherPlugin(DisplayPlugin):
             self.first_draw = False
             return True
         except Exception as e:
-            print(f"Weather update error: {e}")
+            logger.error(f"Weather update Error: {e}")
             return False
 
     def cleanup(self):
@@ -114,14 +117,14 @@ class WeatherPlugin(DisplayPlugin):
                     'wind': wind_speed,
                 }
             else:
-                print(f"Weather API error: {response.status_code}")
+                logger.error(f"Weather API Error: {response.status_code}")
                 return None
 
         except requests.Timeout:
-            print("Weather API timeout")
+            logger.info("Weather API timeout")
             return None
         except Exception as e:
-            print(f"Error getting weather: {e}")
+            logger.info(f"Error getting weather: {e}")
             return None
 
     def _display_weather_info(self, first_draw=False):
@@ -220,6 +223,6 @@ class WeatherPlugin(DisplayPlugin):
         send_keep_alive(self.ser)
 
         if self.weather_data:
-            print(f"🌤️  Weather: {self.weather_data['temp']}°C, {self.weather_data['humidity']}%, {self.weather_data['weather']}, AQI: {self.weather_data['aqi']}")
+            logger.info(f"🌤️  Weather: {self.weather_data['temp']}°C, {self.weather_data['humidity']}%, {self.weather_data['weather']}, AQI: {self.weather_data['aqi']}")
         else:
-            print("🌤️  Weather data unavailable")
+            logger.info("🌤️  Weather data unavailable")

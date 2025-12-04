@@ -8,6 +8,9 @@ Configuration Loader
 import configparser
 import os
 from typing import Dict, Any
+from logger import get_logger
+
+logger = get_logger()
 
 
 class ConfigLoader:
@@ -29,8 +32,8 @@ class ConfigLoader:
         if os.path.exists(self.config_file):
             self.config.read(self.config_file)
         else:
-            print(f"⚠️  Config file not found: {self.config_file}")
-            print("Using default configuration")
+            logger.warning(f"Config file not found: {self.config_file}")
+            logger.info("Using default configuration")
 
     def get_clock_config(self) -> Dict[str, Any]:
         """Get clock plugin configuration"""

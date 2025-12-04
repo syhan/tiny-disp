@@ -11,6 +11,9 @@ import socket
 import serial
 
 from lib.display_interface import DisplayPlugin
+from logger import get_logger
+
+logger = get_logger()
 from lib.msc_display_lib import (
     MSCDisplay,
     Colors,
@@ -48,7 +51,7 @@ class MetricsRotatedPlugin(DisplayPlugin):
             self.last_ip = None
             return True
         except Exception as e:
-            print(f"Metrics (Rotated) plugin initialization error: {e}")
+            logger.error(f"Metrics (Rotated) plugin initialization Error: {e}")
             return False
 
     def update(self) -> bool:
@@ -60,7 +63,7 @@ class MetricsRotatedPlugin(DisplayPlugin):
             self.frame += 1
             return True
         except Exception as e:
-            print(f"Metrics (Rotated) update error: {e}")
+            logger.error(f"Metrics (Rotated) update Error: {e}")
             return False
 
     def cleanup(self):
@@ -233,4 +236,4 @@ class MetricsRotatedPlugin(DisplayPlugin):
 
         send_keep_alive(self.ser)
 
-        print(f"⚡ [MATRIX ROTATED] CPU:{metrics['cpu']:02d}% MEM:{metrics['mem']:02d}% LOAD:{metrics['load']} PROC:{metrics['procs']} UP:{metrics['uptime']}H")
+        logger.debug(f"⚡ [MATRIX ROTATED] CPU:{metrics['cpu']:02d}% MEM:{metrics['mem']:02d}% LOAD:{metrics['load']} PROC:{metrics['procs']} UP:{metrics['uptime']}H")

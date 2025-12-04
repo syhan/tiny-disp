@@ -9,6 +9,9 @@ import serial
 import serial.tools.list_ports
 import time
 from typing import Optional
+from logger import get_logger
+
+logger = get_logger()
 
 # 5x7 bitmap font - 共享字体定义
 FONT_5X7 = {
@@ -100,7 +103,7 @@ def find_msc_device() -> Optional[serial.Serial]:
                     time.sleep(0.25)
                     confirm = ser.read(ser.in_waiting).decode("gbk", errors="ignore")
                     if "MSNCN" in confirm:
-                        print(f"✓ Connected: {port_path}")
+                        logger.info(f"Connected: {port_path}")
                         return ser
             ser.close()
         except:
@@ -121,12 +124,12 @@ def wait_for_msc_device(retry_interval: int = 5, silent: bool = False) -> serial
         serial.Serial: Connected serial port
     """
     if not silent:
-        print("⏳ Waiting for MSC device...")
+        logger.info("Waiting for MSC device...")
     while True:
         ser = find_msc_device()
         if ser:
             return ser
-        print(f"   Device not found, retrying in {retry_interval} seconds...")
+        logger.info(f"Device not found, retrying in {retry_interval} seconds...")
         time.sleep(retry_interval)
 
 

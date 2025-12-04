@@ -12,6 +12,9 @@ from typing import List, Optional, Type
 import serial
 
 from lib.display_interface import DisplayPlugin, DisplayConfig
+from logger import get_logger
+
+logger = get_logger()
 
 
 class PluginManager:
@@ -42,7 +45,7 @@ class PluginManager:
 
         # Check if plugin directory exists
         if not os.path.exists(self.plugin_dir):
-            print(f"⚠ Plugin directory '{self.plugin_dir}' not found")
+            logger.warning(f"Plugin directory '{self.plugin_dir}' not found")
             return 0
 
         # Add plugin directory to path
@@ -72,13 +75,13 @@ class PluginManager:
                         issubclass(attr, DisplayPlugin) and
                             attr is not DisplayPlugin):
                         self.plugins.append(attr)
-                        print(f"✓ Loaded plugin: {module_name}")
+                        logger.info(f"Loaded plugin: {module_name}")
                         break
 
             except ImportError as e:
-                print(f"⚠ Failed to load {module_name}: {e}")
+                logger.warning(f"Failed to load {module_name}: {e}")
             except Exception as e:
-                print(f"⚠ Error loading {module_name}: {e}")
+                logger.warning(f"Error loading {module_name}: {e}")
 
         return len(self.plugins)
 
@@ -94,7 +97,7 @@ class PluginManager:
         """
         # Check if plugin directory exists
         if not os.path.exists(self.plugin_dir):
-            print(f"⚠ Plugin directory '{self.plugin_dir}' not found")
+            logger.warning(f"Plugin directory '{self.plugin_dir}' not found")
             return None
 
         # Add plugin directory to path
@@ -114,7 +117,7 @@ class PluginManager:
         # Check if the file exists
         plugin_path = os.path.join(self.plugin_dir, f"{module_name}.py")
         if not os.path.exists(plugin_path):
-            print(f"⚠ Plugin file '{module_name}.py' not found")
+            logger.warning(f"Plugin file '{module_name}.py' not found")
             return None
 
         try:
@@ -127,17 +130,17 @@ class PluginManager:
                 if (isinstance(attr, type) and
                     issubclass(attr, DisplayPlugin) and
                         attr is not DisplayPlugin):
-                    print(f"✓ Loaded plugin: {module_name}")
+                    logger.info(f"Loaded plugin: {module_name}")
                     return attr
 
-            print(f"⚠ No DisplayPlugin subclass found in {module_name}")
+            logger.warning(f"No DisplayPlugin subclass found in {module_name}")
             return None
 
         except ImportError as e:
-            print(f"⚠ Failed to import {module_name}: {e}")
+            logger.warning(f"Failed to import {module_name}: {e}")
             return None
         except Exception as e:
-            print(f"⚠ Error loading {module_name}: {e}")
+            logger.warning(f"Error loading {module_name}: {e}")
             return None
 
     def list_plugins(self) -> List[dict]:
@@ -201,7 +204,7 @@ class PluginManager:
         """
         # Stop current plugin
         if self.current_plugin:
-            print(f"Stopping: {self.current_plugin.get_name()}")
+            logger.info(f"Stopping: {self.current_plugin.get_name()}")
             self.current_plugin.stop()
             self.current_plugin = None
 
@@ -209,14 +212,14 @@ class PluginManager:
         try:
             self.current_plugin = plugin_class(self.ser)
             if self.current_plugin.start():
-                print(f"Started: {self.current_plugin.get_name()}")
+                logger.info(f"Started: {self.current_plugin.get_name()}")
                 return True
             else:
-                print(f"Failed to start: {self.current_plugin.get_name()}")
+                logger.error(f"Failed to start: {self.current_plugin.get_name()}")
                 self.current_plugin = None
                 return False
         except Exception as e:
-            print(f"Error starting plugin: {e}")
+            logger.error(f"Error starting plugin: {e}")
             self.current_plugin = None
             return False
 
@@ -272,7 +275,7 @@ class PluginManager:
                 self.current_plugin.wake_device()
                 return self.current_plugin.update()
             except Exception as e:
-                print(f"Error updating plugin: {e}")
+                logger.error(f"Error updating plugin: {e}")
                 return False
         return False
 

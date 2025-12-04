@@ -11,6 +11,9 @@ import pytz
 import serial
 
 from lib.display_interface import DisplayPlugin
+from logger import get_logger
+
+logger = get_logger()
 from lib.msc_display_lib import (
     MSCDisplay,
     Colors,
@@ -60,7 +63,7 @@ class ClockPlugin(DisplayPlugin):
             self.last_minute = -1
             return True
         except Exception as e:
-            print(f"Clock plugin initialization error: {e}")
+            logger.error(f"Clock plugin initialization Error: {e}")
             return False
 
     def update(self) -> bool:
@@ -78,16 +81,16 @@ class ClockPlugin(DisplayPlugin):
                 self.first_draw = False
 
                 if minute_changed:
-                    print(f"\n🌍 World Time Update:")
+                    logger.info(f"\n🌍 World Time Update:")
                     for city in self.cities:
                         city_data = self._get_city_time(city['timezone'])
-                        print(f"   {city['name']:12} {city_data['time']}")
+                        logger.info(f"   {city['name']:12} {city_data['time']}")
             else:
                 send_keep_alive(self.ser)
 
             return True
         except Exception as e:
-            print(f"Clock update error: {e}")
+            logger.error(f"Clock update Error: {e}")
             return False
 
     def cleanup(self):
@@ -106,7 +109,7 @@ class ClockPlugin(DisplayPlugin):
                 'hour': city_time.hour
             }
         except Exception as e:
-            print(f"Error getting time for {timezone_str}: {e}")
+            logger.info(f"Error getting time for {timezone_str}: {e}")
             return {
                 'time': "--:--",
                 'date': "--/--",

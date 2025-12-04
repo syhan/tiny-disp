@@ -14,6 +14,9 @@ import serial
 from typing import Dict, List
 
 from lib.display_interface import DisplayPlugin
+from logger import get_logger
+
+logger = get_logger()
 from lib.msc_display_lib import (
     MSCDisplay,
     Colors,
@@ -61,45 +64,45 @@ class ZFSPagesPlugin(DisplayPlugin):
         try:
             # Check if sshpass is installed
             if not self._check_sshpass():
-                print("❌ ERROR: sshpass is not installed!")
-                print("\nPlease install sshpass first:")
-                print("  On Debian/Ubuntu/Proxmox VE:")
-                print("    apt update && apt install sshpass -y")
-                print("  On macOS:")
-                print("    brew install sshpass")
+                logger.error(" ERROR: sshpass is not installed!")
+                logger.info("\nPlease install sshpass first:")
+                logger.info("  On Debian/Ubuntu/Proxmox VE:")
+                logger.info("    apt update && apt install sshpass -y")
+                logger.info("  On macOS:")
+                logger.info("    brew install sshpass")
                 return False
 
             self.display = MSCDisplay(self.ser)
             self.display.set_orientation(landscape=True)
 
             # Calibrate button
-            print("Calibrating touch button...")
+            logger.info("Calibrating touch button...")
             adc_baseline = self._read_adc_channel(9)
             self.button_threshold = adc_baseline - 125
-            print(f"✓ Button threshold: {self.button_threshold}")
+            logger.info(f" Button threshold: {self.button_threshold}")
 
             # Test SSH connection
-            print(f"Testing SSH connection to {self.ssh_config['host']}...")
+            logger.info(f"Testing SSH connection to {self.ssh_config['host']}...")
             pool_info = self._get_pool_info()
             if pool_info['online']:
-                print(f"✓ Connected to TrueNAS")
-                print(f"✓ Found pool: {pool_info['name']}")
+                logger.info(f" Connected to TrueNAS")
+                logger.info(f" Found pool: {pool_info['name']}")
             else:
-                print("⚠️  WARNING: Cannot connect to TrueNAS!")
-                print("Continuing with offline display...")
+                logger.warning("  WARNING: Cannot connect to TrueNAS!")
+                logger.info("Continuing with offline display...")
 
-            print("✓ Multi-page mode:")
-            print("  Page 1: Pool Overview + Events")
-            print("  Page 2: Datasets")
-            print("  Page 3: Disk Status")
-            print("👆 Touch button to switch pages manually")
+            logger.info(" Multi-page mode:")
+            logger.info("  Page 1: Pool Overview + Events")
+            logger.info("  Page 2: Datasets")
+            logger.info("  Page 3: Disk Status")
+            logger.info("👆 Touch button to switch pages manually")
 
             self.current_page = 0
             self.last_page_change = time.time()
 
             return True
         except Exception as e:
-            print(f"ZFS Pages plugin initialization error: {e}")
+            logger.error(f"ZFS Pages plugin initialization Error: {e}")
             return False
 
     def update(self) -> bool:
@@ -114,7 +117,7 @@ class ZFSPagesPlugin(DisplayPlugin):
                 self.current_page = (self.current_page + 1) % 3
                 self.last_page_change = current_time
                 self.first_draw = True
-                print("👆 Button pressed - switching page")
+                logger.info("👆 Button pressed - switching page")
                 self.button_was_pressed = True
             elif not button_pressed:
                 self.button_was_pressed = False
@@ -131,21 +134,21 @@ class ZFSPagesPlugin(DisplayPlugin):
                     pool_info = self._get_pool_info()
                     events = self._get_pool_events()
                     self._display_page1_pool(pool_info, events)
-                    print(f"📄 Page 1: {pool_info['name']} - {pool_info['cap']}% - {len(events)} events")
+                    logger.info(f"📄 Page 1: {pool_info['name']} - {pool_info['cap']}% - {len(events)} events")
                 elif self.current_page == 1:
                     datasets = self._get_datasets()
                     self._display_page2_datasets(datasets)
-                    print(f"📄 Page 2: {len(datasets)} datasets")
+                    logger.info(f"📄 Page 2: {len(datasets)} datasets")
                 else:
                     disks = self._get_disk_status()
                     self._display_page3_disks(disks)
-                    print(f"📄 Page 3: {len(disks)} disks")
+                    logger.info(f"📄 Page 3: {len(disks)} disks")
 
                 self.first_draw = False
 
             return True
         except Exception as e:
-            print(f"ZFS Pages update error: {e}")
+            logger.error(f"ZFS Pages update Error: {e}")
             return False
 
     def cleanup(self):
@@ -176,7 +179,7 @@ class ZFSPagesPlugin(DisplayPlugin):
             if result.returncode == 0:
                 return result.stdout.strip()
         except Exception as e:
-            print(f"SSH command error: {e}")
+            logger.error(f"SSH command Error: {e}")
         return ""
 
     def _get_pool_info(self) -> Dict:

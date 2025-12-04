@@ -19,42 +19,41 @@ logger = get_logger()
 
 def print_banner():
     """Print application banner"""
-    print("=" * 60)
-    print("Tiny Display - Pluggable Display System")
-    print("可插拔式显示系统")
-    print("=" * 60)
-    print()
+    logger.info("=" * 60)
+    logger.info("Tiny Display - Pluggable Display System")
+    logger.info("可插拔式显示系统")
+    logger.info("=" * 60)
 
 
 def print_menu(manager: PluginManager):
     """Print plugin selection menu"""
-    print("\n" + "=" * 60)
-    print("Available Display Plugins:")
-    print("=" * 60)
+    logger.info("")
+    logger.info("=" * 60)
+    logger.info("Available Display Plugins:")
+    logger.info("=" * 60)
 
     plugins = manager.list_plugins()
     for plugin in plugins:
-        print(f"• {plugin['name']}")
-        print(f"  {plugin['description']}")
-        print(f"  Update interval: {plugin['update_interval']}s")
-        print()
+        logger.info(f"• {plugin['name']}")
+        logger.info(f"  {plugin['description']}")
+        logger.info(f"  Update interval: {plugin['update_interval']}s")
 
     current = manager.get_current_plugin()
     if current:
-        print(f"Current: {current.get_name()}")
+        logger.info(f"Current: {current.get_name()}")
     else:
-        print("Current: None")
-    print("=" * 60)
+        logger.info("Current: None")
+    logger.info("=" * 60)
 
 
 def run_plugin_loop(manager: PluginManager):
     """Run the main plugin update loop"""
-    print("\n✓ Plugin started successfully")
-    print("✓ Press Ctrl+C to switch plugins or exit\n")
+    logger.info("Plugin started successfully")
+    logger.info("Press Ctrl+C to switch plugins or exit")
 
     current_plugin = manager.get_current_plugin()
     if not current_plugin:
-        print("⚠️  No plugin active")
+        logger.warning("No plugin active")
         return
 
     update_interval = current_plugin.get_update_interval()
@@ -64,18 +63,18 @@ def run_plugin_loop(manager: PluginManager):
         while True:
             # Check device connection
             if not is_device_connected(manager.ser):
-                print("\n⚠️  Device disconnected!")
+                logger.warning("Device disconnected!")
                 return
 
             # Update plugin
             try:
                 if not manager.update_current_plugin():
-                    print("⚠️  Plugin update failed, returning to menu...")
+                    logger.warning("Plugin update failed, returning to menu...")
                     manager.cleanup()  # This will stop and clear current plugin
                     time.sleep(2)
                     break  # Return to plugin selection menu
             except Exception as e:
-                print(f"⚠️  Plugin error: {e}")
+                logger.error(f"Plugin error: {e}")
                 manager.cleanup()  # This will stop and clear current plugin
                 time.sleep(2)
                 break  # Return to plugin selection menu
@@ -84,14 +83,14 @@ def run_plugin_loop(manager: PluginManager):
             elapsed = 0
             while elapsed < update_interval:
                 if not is_device_connected(manager.ser):
-                    print("\n⚠️  Device disconnected!")
+                    logger.warning("Device disconnected!")
                     return
 
                 time.sleep(keepalive_interval)
                 elapsed += keepalive_interval
 
     except KeyboardInterrupt:
-        print("\n\n⏸️  Interrupted by user")
+        logger.info("Interrupted by user")
         raise
 
 
@@ -129,7 +128,7 @@ def select_plugin_interactive(manager: PluginManager) -> bool:
             return False
 
         if not choice:
-            print("⚠️  Please enter a plugin name")
+            logger.warning("Please enter a plugin name")
             time.sleep(1)
             return True
 
@@ -140,14 +139,14 @@ def select_plugin_interactive(manager: PluginManager) -> bool:
         if manager.switch_to_name(choice):
             return True
         else:
-            print(f"⚠️  Plugin '{choice}' not found")
-            print("   Please check the plugin name and try again")
+            logger.warning(f"Plugin '{choice}' not found")
+            logger.info("Please check the plugin name and try again")
             time.sleep(2)
             return True
 
     except KeyboardInterrupt:
         keep_alive_active = False
-        print("\n")
+        logger.info("")
         return False
 
 
@@ -194,59 +193,75 @@ Examples:
             # Wait for device connection
             ser = wait_for_msc_device(retry_interval=5, silent=False)
 
-            print("✓ Device connected\n")
+            logger.info("Device connected")
 
             # Initialize plugin manager
             manager = PluginManager(ser)
 
             # Handle non-interactive mode with specific plugin (no need to discover all)
             if not interactive_mode and plugin_to_run and not args.list:
-                print(f"🚀 Loading plugin: {plugin_to_run}")
+                logger.info(f"Loading plugin: {plugin_to_run}")
 
                 # Load only the requested plugin by filename
                 plugin_class = manager.load_plugin_by_file(plugin_to_run)
 
                 if not plugin_class:
-                    print(f"⚠️  Plugin file '{plugin_to_run}' not found!")
-                    print("\nPlugin filename examples:")
-                    print("  plugin_clock")
-                    print("  plugin_metrics")
-                    print("  plugin_sample")
-                    print("\nTo see all available plugins, run:")
-                    print("  python3 main.py --list")
+                    logger.error(f"Plugin file '{plugin_to_run}' not found!")
+                    logger.info("Plugin filename examples:")
+                    logger.info("  plugin_clock")
+                    logger.info("  plugin_metrics")
+                    logger.info("  plugin_sample")
+                    logger.info("To see all available plugins, run:")
+                    logger.info("  python3 main.py --list")
                     return
 
                 # Start the plugin directly
                 if not manager.switch_plugin(plugin_class):
-                    print(f"⚠️  Failed to start plugin")
+                    logger.error("Failed to start plugin")
                     return
 
+                # Print plugin information
+                current_plugin = manager.get_current_plugin()
+                if current_plugin:
+                    logger.info(f"Plugin: {current_plugin.get_name()}")
+                    logger.info(f"Description: {current_plugin.get_description()}")
+                    logger.info(f"Update interval: {current_plugin.get_update_interval()}s")
+
                 # Run plugin continuously (non-interactive)
+                # If device disconnects, loop will restart and wait for reconnection
                 try:
                     while True:
                         if not is_device_connected(ser):
-                            print("\n⚠️  Device disconnected!")
-                            break
+                            logger.warning("Device disconnected!")
+                            logger.info("Waiting for device reconnection...")
+                            manager.cleanup()
+                            ser.close()
+                            break  # Break to outer loop to reconnect
 
                         run_plugin_loop(manager)
                 except KeyboardInterrupt:
-                    print("\n\n👋 Exiting...")
-                finally:
+                    logger.info("Exiting...")
                     manager.cleanup()
-                    ser.close()
-                return
+                    try:
+                        ser.close()
+                    except:
+                        pass
+                    return
+
+                # Continue to next iteration to reconnect
+                continue
 
             # Discover plugins for interactive mode or list mode
-            print("🔍 Discovering plugins...")
+            logger.info("Discovering plugins...")
             plugin_count = manager.discover_plugins()
 
             if plugin_count == 0:
-                print("⚠️  No plugins found!")
-                print("Please ensure plugin files are in the plugins directory.")
+                logger.warning("No plugins found!")
+                logger.info("Please ensure plugin files are in the plugins directory.")
                 time.sleep(5)
                 continue
 
-            print(f"✓ Found {plugin_count} plugin(s)\n")
+            logger.info(f"Found {plugin_count} plugin(s)")
 
             # Handle --list mode
             if args.list:
@@ -258,7 +273,7 @@ Examples:
                 while True:
                     # Check device connection
                     if not is_device_connected(ser):
-                        print("\n⚠️  Device disconnected!")
+                        logger.warning("Device disconnected!")
                         manager.cleanup()
                         break
 
@@ -274,7 +289,7 @@ Examples:
                             run_plugin_loop(manager)
                         except KeyboardInterrupt:
                             # User interrupted, return to menu
-                            print("\n🔄 Returning to menu...")
+                            logger.info("Returning to menu...")
                             if manager.get_current_plugin():
                                 manager.get_current_plugin().stop()
                             time.sleep(1)
@@ -282,12 +297,12 @@ Examples:
 
                     # Check connection again before continuing
                     if not is_device_connected(ser):
-                        print("\n⚠️  Device disconnected!")
+                        logger.warning("Device disconnected!")
                         manager.cleanup()
                         break
 
             except Exception as e:
-                print(f"\n⚠️  Error: {e}")
+                logger.error(f"Error: {e}")
                 manager.cleanup()
                 try:
                     ser.close()
@@ -296,7 +311,7 @@ Examples:
                 time.sleep(2)
 
     except KeyboardInterrupt:
-        print("\n\n👋 Exiting...")
+        logger.info("Exiting...")
         try:
             if 'manager' in locals():
                 manager.cleanup()
@@ -304,7 +319,7 @@ Examples:
                 ser.close()
         except:
             pass
-        print("✓ Cleanup complete")
+        logger.info("Cleanup complete")
 
 
 if __name__ == "__main__":
