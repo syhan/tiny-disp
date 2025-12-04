@@ -1,100 +1,102 @@
-# Tiny Display - 可插拔式显示系统
+# Tiny Display - Pluggable Display System
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 
-一个统一的、可插拔的MSC显示设备驱动系统，支持多种显示模式。采用模块化设计，易于扩展和维护。
+A unified, pluggable MSC display device driver system supporting multiple display modes. Built with modular design for easy extension and maintenance.
 
-## ✨ 特性
+> 🌏 **中文文档**: [README_CN.md](README_CN.md)
 
-- 🔌 **可插拔架构** - 基于插件的模块化设计
-- 🎯 **统一接口** - 所有插件遵循统一的DisplayPlugin接口
-- 🔄 **自动重连** - 设备断开后自动等待重连
-- 📝 **配置管理** - 支持配置文件和环境变量
-- 🐳 **Docker支持** - 提供完整的容器化部署方案
-- 📊 **日志系统** - 统一的彩色日志输出
-- 🎨 **多种显示** - 时钟、天气、系统监控、ZFS存储等
+## ✨ Features
 
-## 📁 项目结构
+- 🔌 **Pluggable Architecture** - Modular plugin-based design
+- 🎯 **Unified Interface** - All plugins follow the DisplayPlugin interface
+- 🔄 **Auto-Reconnect** - Automatically reconnects when device is disconnected
+- 📝 **Configuration Management** - Support for config files and environment variables
+- 🐳 **Docker Support** - Complete containerization solution
+- 📊 **Logging System** - Unified colored log output
+- 🎨 **Multiple Displays** - Clock, weather, system metrics, ZFS storage, etc.
+
+## 📁 Project Structure
 
 ```
 tiny-disp/
-├── main.py                   # 主程序入口
-├── plugin_manager.py         # 插件管理器
-├── config_loader.py          # 配置加载器
-├── logger.py                 # 日志模块
-├── .tiny-disp.conf          # 配置文件
-├── .tiny-disp.conf.sample   # 配置文件示例
-├── requirements.txt          # Python依赖
+├── main.py                   # Main program entry
+├── plugin_manager.py         # Plugin manager
+├── config_loader.py          # Configuration loader
+├── logger.py                 # Logging module
+├── .tiny-disp.conf          # Configuration file
+├── .tiny-disp.conf.sample   # Configuration template
+├── requirements.txt          # Python dependencies
 │
-├── lib/                      # 核心库
-│   ├── display_interface.py  # 显示插件基类
-│   └── msc_display_lib.py    # MSC设备底层库
+├── lib/                      # Core libraries
+│   ├── display_interface.py  # Display plugin base class
+│   └── msc_display_lib.py    # MSC device low-level library
 │
-├── plugins/                  # 插件目录
-│   ├── plugin_sample.py      # 示例插件
-│   ├── plugin_clock.py       # 世界时钟
-│   ├── plugin_weather.py     # 天气显示
-│   ├── plugin_metrics.py     # 系统指标
-│   ├── plugin_metrics_rotated.py  # 旋转版指标
-│   ├── plugin_zfs.py         # ZFS存储监控
-│   └── plugin_zfs_pages.py   # ZFS多页显示
+├── plugins/                  # Plugin directory
+│   ├── plugin_sample.py      # Sample plugin
+│   ├── plugin_clock.py       # World clock
+│   ├── plugin_weather.py     # Weather display
+│   ├── plugin_metrics.py     # System metrics
+│   ├── plugin_metrics_rotated.py  # Rotated metrics
+│   ├── plugin_zfs.py         # ZFS storage monitor
+│   └── plugin_zfs_pages.py   # ZFS multi-page display
 │
-├── legacy/                   # 旧版独立程序
+├── legacy/                   # Legacy standalone programs
 │   ├── clock.py
 │   ├── weather.py
 │   ├── metrics.py
 │   └── ...
 │
-├── docs/                     # 文档
-│   ├── PROJECT_STRUCTURE.md  # 项目结构说明
-│   ├── DOCKER.md             # Docker使用指南
-│   ├── MSC_DISPLAY_GUIDE.md  # MSC显示设备指南
-│   └── REMOVE_SENSITIVE_DATA.md  # 敏感数据清理
+├── docs/                     # Documentation
+│   ├── PROJECT_STRUCTURE.md  # Project structure guide
+│   ├── DOCKER.md             # Docker deployment guide
+│   ├── MSC_DISPLAY_GUIDE.md  # MSC display device guide
+│   └── REMOVE_SENSITIVE_DATA.md  # Sensitive data removal
 │
-├── Dockerfile                # Docker镜像
-├── docker-compose.yml        # Docker Compose配置
-└── .dockerignore            # Docker忽略文件
+├── Dockerfile                # Docker image
+├── docker-compose.yml        # Docker Compose config
+└── .dockerignore            # Docker ignore file
 ```
 
-## 🚀 快速开始
+## 🚀 Quick Start
 
-### 安装依赖
+### Install Dependencies
 
 ```bash
-# 安装Python依赖
+# Install Python dependencies
 pip3 install -r requirements.txt
 
-# macOS需要额外安装
-brew install sshpass  # 用于ZFS插件SSH连接
+# macOS additional requirement
+brew install sshpass  # Required for ZFS plugin SSH connection
 ```
 
-### 基本使用
+### Basic Usage
 
 ```bash
-# 1. 交互模式 - 从菜单选择插件
+# 1. Interactive mode - select plugin from menu
 python3 main.py
 
-# 2. 列出所有可用插件
+# 2. List all available plugins
 python3 main.py --list
 
-# 3. 直接运行指定插件
+# 3. Run specific plugin directly
 python3 main.py --plugin plugin_clock
 python3 main.py --plugin plugin_metrics
 python3 main.py --plugin plugin_zfs
 ```
 
-### 配置文件
+### Configuration File
 
 ```bash
-# 复制配置文件模板
+# Copy configuration template
 cp .tiny-disp.conf.sample .tiny-disp.conf
 
-# 编辑配置
+# Edit configuration
 nano .tiny-disp.conf
 ```
 
-配置文件示例：
+Configuration example:
 ```ini
 [general]
 log_level = INFO
@@ -117,16 +119,15 @@ page_duration = 4
 update_interval = 1
 ```
 
-## 📖 使用示例
+## 📖 Usage Examples
 
-### 交互模式
+### Interactive Mode
 
 ```bash
 $ python3 main.py
 
 ============================================================
 Tiny Display - Pluggable Display System
-可插拔式显示系统
 ============================================================
 
 ✓ INFO - Waiting for MSC device...
@@ -158,10 +159,10 @@ Available Display Plugins:
 Enter plugin name (or 'q' to quit): World Clock
 ```
 
-### 非交互模式
+### Non-Interactive Mode
 
 ```bash
-# 运行时钟插件
+# Run clock plugin
 $ python3 main.py --plugin plugin_clock
 
 ✓ INFO - Loading plugin: plugin_clock
@@ -177,50 +178,49 @@ $ python3 main.py --plugin plugin_clock
    WASHINGTN    02:30
 ```
 
-### Docker部署
+### Docker Deployment
 
 ```bash
-# 构建镜像
-docker-compose build
-
-# 运行容器
+# Build and start
 docker-compose up -d
 
-# 查看日志
+# View logs
 docker-compose logs -f
 
-# 停止容器
+# Restart service
+docker-compose restart
+
+# Stop service
 docker-compose down
 ```
 
-详细的Docker使用说明请参考 [docs/DOCKER.md](docs/DOCKER.md)
+For detailed Docker usage, see [docs/DOCKER.md](docs/DOCKER.md)
 
-## 🔌 可用插件
+## 🔌 Available Plugins
 
-| 插件名称 | 文件名 | 功能描述 | 更新间隔 |
-|---------|--------|---------|---------|
-| **World Clock** | plugin_clock.py | 显示4个城市的时间 | 4秒 |
-| **Weather** | plugin_weather.py | 显示天气信息 | 600秒 |
-| **System Metrics** | plugin_metrics.py | CPU/内存/磁盘监控 | 10秒 |
-| **System Metrics (Rotated)** | plugin_metrics_rotated.py | 旋转版系统监控 | 10秒 |
-| **ZFS Pool Monitor** | plugin_zfs.py | ZFS存储池监控 | 15秒 |
-| **ZFS Pool Monitor (Pages)** | plugin_zfs_pages.py | ZFS多页显示（支持触摸按钮） | 1秒 |
-| **Hello World Advanced** | plugin_sample.py | 彩虹色循环动画示例 | 2秒 |
+| Plugin Name | Filename | Description | Update Interval |
+|------------|----------|-------------|----------------|
+| **World Clock** | plugin_clock.py | Display time for 4 cities | 4s |
+| **Weather** | plugin_weather.py | Display weather information | 600s |
+| **System Metrics** | plugin_metrics.py | CPU/Memory/Disk monitoring | 10s |
+| **System Metrics (Rotated)** | plugin_metrics_rotated.py | Rotated system metrics | 10s |
+| **ZFS Pool Monitor** | plugin_zfs.py | ZFS storage pool monitoring | 15s |
+| **ZFS Pool Monitor (Pages)** | plugin_zfs_pages.py | ZFS multi-page display (touch button support) | 1s |
+| **Hello World Advanced** | plugin_sample.py | Rainbow color cycling animation | 2s |
 
-## 🛠️ 插件开发
+## 🛠️ Plugin Development
 
-### 创建新插件
+### Create a New Plugin
 
-1. 在 `plugins/` 目录创建 `plugin_myapp.py`
-2. 继承 `DisplayPlugin` 基类
-3. 实现必需方法
+1. Create `plugin_myapp.py` in the `plugins/` directory
+2. Inherit from `DisplayPlugin` base class
+3. Implement required methods
 
 ```python
 #!/usr/bin/env python3
 # -*- coding: UTF-8 -*-
 """
 My Custom Plugin
-自定义插件
 """
 
 import serial
@@ -239,19 +239,19 @@ class MyCustomPlugin(DisplayPlugin):
         self.display = None
 
     def get_name(self) -> str:
-        """插件名称"""
+        """Plugin name"""
         return "My Custom Display"
 
     def get_description(self) -> str:
-        """插件描述"""
+        """Plugin description"""
         return "Description of what this plugin does"
 
     def get_update_interval(self) -> int:
-        """更新间隔（秒）"""
+        """Update interval in seconds"""
         return 10
 
     def initialize(self) -> bool:
-        """初始化插件"""
+        """Initialize the plugin"""
         try:
             self.display = MSCDisplay(self.ser)
             self.display.set_orientation(landscape=True)
@@ -262,7 +262,7 @@ class MyCustomPlugin(DisplayPlugin):
             return False
 
     def update(self) -> bool:
-        """更新显示内容"""
+        """Update display content"""
         try:
             if self.first_draw:
                 clear_screen(self.ser, Colors.BLACK)
@@ -278,63 +278,63 @@ class MyCustomPlugin(DisplayPlugin):
             return False
 
     def cleanup(self):
-        """清理资源"""
+        """Cleanup resources"""
         self.display = None
         logger.info("Cleanup complete")
 ```
 
-### 插件生命周期
+### Plugin Lifecycle
 
 ```
 initialize() → update() → update() → ... → cleanup()
      ↓           ↑                              ↓
-     ↓           └─── (每隔 update_interval) ────┘
+     ↓           └─── (every update_interval) ──┘
      ↓
- 设备初始化     定期更新显示           插件停止时清理
+Device Init      Periodic Update        Cleanup on Stop
 ```
 
-### 必需实现的方法
+### Required Methods
 
-| 方法 | 返回类型 | 说明 |
-|------|---------|------|
-| `get_name()` | str | 插件显示名称 |
-| `get_description()` | str | 插件功能描述 |
-| `get_update_interval()` | int | 更新间隔（秒） |
-| `initialize()` | bool | 初始化，返回True表示成功 |
-| `update()` | bool | 更新显示，返回True表示成功 |
-| `cleanup()` | None | 清理资源 |
+| Method | Return Type | Description |
+|--------|------------|-------------|
+| `get_name()` | str | Plugin display name |
+| `get_description()` | str | Plugin functionality description |
+| `get_update_interval()` | int | Update interval in seconds |
+| `initialize()` | bool | Initialize, return True on success |
+| `update()` | bool | Update display, return True on success |
+| `cleanup()` | None | Cleanup resources |
 
-### 插件最佳实践
+### Best Practices
 
-1. **使用logger而非print**
+1. **Use Logger Instead of Print**
    ```python
    from logger import get_logger
    logger = get_logger()
 
-   logger.info("正常信息")
-   logger.warning("警告信息")
-   logger.error("错误信息")
+   logger.info("Normal information")
+   logger.warning("Warning message")
+   logger.error("Error message")
    ```
 
-2. **使用配置文件**
+2. **Use Configuration Files**
    ```python
    from config_loader import config
 
    value = config.get('my_plugin', 'setting', fallback='default')
    ```
 
-3. **异常处理**
+3. **Exception Handling**
    ```python
    def update(self) -> bool:
        try:
-           # 更新逻辑
+           # Update logic
            return True
        except Exception as e:
            logger.error(f"Update failed: {e}")
            return False
    ```
 
-4. **资源清理**
+4. **Resource Cleanup**
    ```python
    def cleanup(self):
        if self.resource:
@@ -342,47 +342,47 @@ initialize() → update() → update() → ... → cleanup()
        self.display = None
    ```
 
-## 📝 日志系统
+## 📝 Logging System
 
-系统使用统一的彩色日志输出：
+The system uses unified colored log output:
 
 ```python
 from logger import get_logger
 logger = get_logger()
 
-logger.debug("调试信息")    # 🔍 DEBUG - 青色
-logger.info("正常信息")     # ✓ INFO - 绿色
-logger.warning("警告信息")  # ⚠️ WARNING - 黄色
-logger.error("错误信息")    # ✗ ERROR - 红色
-logger.critical("严重错误")  # 🚨 CRITICAL - 紫色
+logger.debug("Debug info")      # 🔍 DEBUG - Cyan
+logger.info("Normal info")      # ✓ INFO - Green
+logger.warning("Warning")       # ⚠️ WARNING - Yellow
+logger.error("Error")           # ✗ ERROR - Red
+logger.critical("Critical")     # 🚨 CRITICAL - Magenta
 ```
 
-配置日志级别：
+Configure log level:
 ```ini
 # .tiny-disp.conf
 [general]
 log_level = INFO  # DEBUG, INFO, WARNING, ERROR, CRITICAL
 ```
 
-## 🐳 Docker部署
+## 🐳 Docker Deployment
 
-### 构建和运行
+### Build and Run
 
 ```bash
-# 启动服务
+# Start service
 docker-compose up -d
 
-# 查看日志
+# View logs
 docker-compose logs -f
 
-# 重启服务
+# Restart service
 docker-compose restart
 
-# 停止服务
+# Stop service
 docker-compose down
 ```
 
-### 环境变量
+### Environment Variables
 
 ```yaml
 # docker-compose.yml
@@ -394,37 +394,37 @@ environment:
   - ZFS_PASSWORD=secret
 ```
 
-详细信息请参考 [docs/DOCKER.md](docs/DOCKER.md)
+For detailed information, see [docs/DOCKER.md](docs/DOCKER.md)
 
-## 📋 命令行参数
+## 📋 Command Line Arguments
 
 ```bash
-python3 main.py [选项]
+python3 main.py [options]
 
-选项:
-  -i, --interactive     交互模式（从菜单选择插件）
-  -p, --plugin PLUGIN   直接运行指定插件（按文件名）
-  -l, --list           列出所有可用插件并退出
+Options:
+  -i, --interactive     Interactive mode (select plugin from menu)
+  -p, --plugin PLUGIN   Run specific plugin (by filename)
+  -l, --list           List all available plugins and exit
 
-示例:
-  python3 main.py                          # 交互模式
-  python3 main.py --interactive            # 交互模式
-  python3 main.py --plugin plugin_clock    # 运行时钟插件
-  python3 main.py --list                   # 列出所有插件
+Examples:
+  python3 main.py                          # Interactive mode
+  python3 main.py --interactive            # Interactive mode
+  python3 main.py --plugin plugin_clock    # Run clock plugin
+  python3 main.py --list                   # List all plugins
 ```
 
-## 🔧 设备规格
+## 🔧 Device Specifications
 
-- **屏幕尺寸**: 160×80 像素
-- **接口**: USB串口
-- **波特率**: 19200
-- **颜色格式**: RGB565
-- **方向**: 支持横屏/竖屏
-- **字体**: 内置5×7点阵字体
+- **Screen Size**: 160×80 pixels
+- **Interface**: USB Serial
+- **Baud Rate**: 19200
+- **Color Format**: RGB565
+- **Orientation**: Landscape/Portrait support
+- **Font**: Built-in 5×7 bitmap font
 
-## 🆘 故障排除
+## 🆘 Troubleshooting
 
-### 设备未找到
+### Device Not Found
 
 ```bash
 # macOS
@@ -433,79 +433,83 @@ ls /dev/cu.usbmodem*
 # Linux
 ls /dev/ttyACM*
 
-# 权限问题 (Linux)
+# Permission issue (Linux)
 sudo usermod -a -G dialout $USER
+# Log out and log back in
 ```
 
-### Docker设备访问
+### Docker Device Access
 
 ```bash
-# 查找设备
+# Find device
 ls -l /dev/cu.* /dev/ttyACM*
 
-# 更新docker-compose.yml中的设备路径
+# Update device path in docker-compose.yml
 devices:
   - "/dev/cu.usbmodem01234567891:/dev/ttyUSB0"
 ```
 
-### ZFS插件连接失败
+### ZFS Plugin Connection Failed
 
 ```bash
-# 确保sshpass已安装
+# Ensure sshpass is installed
 brew install sshpass  # macOS
 apt install sshpass   # Debian/Ubuntu
 
-# 测试SSH连接
+# Test SSH connection
 ssh user@192.168.1.100
 
-# 检查配置文件
+# Check configuration file
 cat .tiny-disp.conf
 ```
 
-## 📚 文档
+## 📚 Documentation
 
-- [项目结构说明](docs/PROJECT_STRUCTURE.md)
-- [Docker部署指南](docs/DOCKER.md)
-- [MSC显示设备指南](docs/MSC_DISPLAY_GUIDE.md)
-- [敏感数据清理](docs/REMOVE_SENSITIVE_DATA.md)
+- [Project Structure](docs/PROJECT_STRUCTURE.md)
+- [Docker Deployment Guide](docs/DOCKER.md)
+- [MSC Display Device Guide](docs/MSC_DISPLAY_GUIDE.md)
+- [Sensitive Data Removal](docs/REMOVE_SENSITIVE_DATA.md)
 
-## 🤝 贡献
+## 🤝 Contributing
 
-欢迎提交Issue和Pull Request！
+Contributions are welcome! Please feel free to submit Issues and Pull Requests.
 
-1. Fork本项目
-2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 开启Pull Request
+1. Fork the project
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-## 📄 许可证
+## 📄 License
 
-本项目基于原有代码重构，保留所有原始版权信息。
+This project is refactored from original code, all original copyrights are preserved.
 
-## 🎉 更新日志
+## 🎉 Changelog
 
 ### v2.0.0 (2024-12-04)
 
-- ✨ 全新的可插拔架构
-- ✨ 统一的DisplayPlugin接口
-- ✨ 插件自动发现和加载
-- ✨ 配置文件支持
-- ✨ 统一的日志系统
-- ✨ Docker容器化支持
-- ✨ 自动设备重连
-- ✨ 命令行参数支持
-- ✨ 完整的文档系统
-- 🔧 保留所有原有功能
-- 🐛 修复设备断开重复警告
+- ✨ New pluggable architecture
+- ✨ Unified DisplayPlugin interface
+- ✨ Automatic plugin discovery and loading
+- ✨ Configuration file support
+- ✨ Unified logging system
+- ✨ Docker containerization support
+- ✨ Automatic device reconnection
+- ✨ Command-line argument support
+- ✨ Complete documentation system
+- 🔧 All original features preserved
+- 🐛 Fixed duplicate device disconnect warnings
 
-## 🔗 相关链接
+## 🔗 Links
 
-- [项目仓库](https://github.com/yourusername/tiny-disp)
-- [问题跟踪](https://github.com/yourusername/tiny-disp/issues)
-- [更新日志](CHANGELOG.md)
+- [Project Repository](https://github.com/syhan/tiny-disp)
+- [Issue Tracker](https://github.com/syhan/tiny-disp/issues)
+- [Changelog](CHANGELOG.md)
 
-## 💡 声明
+## 💡 Acknowledgments
 
-本repo大部分代码由cline + claude-4.5-sonnet实现
+Thanks to all contributors and users for their support!
+
 ---
+
+**Made with ❤️ by the Tiny Display Team**
