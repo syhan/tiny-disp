@@ -83,7 +83,7 @@ def run_plugin_loop(manager: PluginManager):
             elapsed = 0
             while elapsed < update_interval:
                 if not is_device_connected(manager.ser):
-                    logger.warning("Device disconnected!")
+                    # Don't log here - will be logged in next iteration
                     return
 
                 time.sleep(keepalive_interval)
