@@ -65,11 +65,11 @@ class ZFSPagesPlugin(DisplayPlugin):
             # Check if sshpass is installed
             if not self._check_sshpass():
                 logger.error(" ERROR: sshpass is not installed!")
-                logger.info("\nPlease install sshpass first:")
-                logger.info("  On Debian/Ubuntu/Proxmox VE:")
-                logger.info("    apt update && apt install sshpass -y")
-                logger.info("  On macOS:")
-                logger.info("    brew install sshpass")
+                logger.error("\nPlease install sshpass first:")
+                logger.error("  On Debian/Ubuntu/Proxmox VE:")
+                logger.error("    apt update && apt install sshpass -y")
+                logger.error("  On macOS:")
+                logger.error("    brew install sshpass")
                 return False
 
             self.display = MSCDisplay(self.ser)

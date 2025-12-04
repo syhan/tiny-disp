@@ -198,4 +198,4 @@ class MetricsPlugin(DisplayPlugin):
 
         send_keep_alive(self.ser)
 
-        logger.info(f"⚡ [MATRIX] CPU:{metrics['cpu']:02d}% MEM:{metrics['mem']:02d}% LOAD:{metrics['load']} PROC:{metrics['procs']} UP:{metrics['uptime']}H")
+        logger.debug(f"⚡ [MATRIX] CPU:{metrics['cpu']:02d}% MEM:{metrics['mem']:02d}% LOAD:{metrics['load']} PROC:{metrics['procs']} UP:{metrics['uptime']}H")

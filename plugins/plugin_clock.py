@@ -81,10 +81,10 @@ class ClockPlugin(DisplayPlugin):
                 self.first_draw = False
 
                 if minute_changed:
-                    logger.info(f"\n🌍 World Time Update:")
+                    logger.debug(f"\n🌍 World Time Update:")
                     for city in self.cities:
                         city_data = self._get_city_time(city['timezone'])
-                        logger.info(f"   {city['name']:12} {city_data['time']}")
+                        logger.debug(f"   {city['name']:12} {city_data['time']}")
             else:
                 send_keep_alive(self.ser)
 
@@ -109,7 +109,7 @@ class ClockPlugin(DisplayPlugin):
                 'hour': city_time.hour
             }
         except Exception as e:
-            logger.info(f"Error getting time for {timezone_str}: {e}")
+            logger.error(f"Error getting time for {timezone_str}: {e}")
             return {
                 'time': "--:--",
                 'date': "--/--",

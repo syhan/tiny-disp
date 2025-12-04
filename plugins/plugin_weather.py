@@ -121,10 +121,10 @@ class WeatherPlugin(DisplayPlugin):
                 return None
 
         except requests.Timeout:
-            logger.info("Weather API timeout")
+            logger.warn("Weather API timeout")
             return None
         except Exception as e:
-            logger.info(f"Error getting weather: {e}")
+            logger.error(f"Error getting weather: {e}")
             return None
 
     def _display_weather_info(self, first_draw=False):
@@ -223,6 +223,6 @@ class WeatherPlugin(DisplayPlugin):
         send_keep_alive(self.ser)
 
         if self.weather_data:
-            logger.info(f"🌤️  Weather: {self.weather_data['temp']}°C, {self.weather_data['humidity']}%, {self.weather_data['weather']}, AQI: {self.weather_data['aqi']}")
+            logger.debug(f"🌤️  Weather: {self.weather_data['temp']}°C, {self.weather_data['humidity']}%, {self.weather_data['weather']}, AQI: {self.weather_data['aqi']}")
         else:
-            logger.info("🌤️  Weather data unavailable")
+            logger.warn("🌤️  Weather data unavailable")
