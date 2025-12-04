@@ -8,14 +8,22 @@ services:
     image: tiny-disp:latest
     container_name: tiny-disp
 
-    # Privileged mode for USB device access
+    # ⚠️ IMPORTANT: macOS Docker Limitation
+    # Docker Desktop for Mac CANNOT access USB devices directly
+    # The devices section below only works on Linux
+    # For macOS, you must run the application natively (without Docker)
+    # or use a Linux VM with USB passthrough
+
+    # Privileged mode for USB device access (Linux only)
     privileged: true
 
-    # Mount USB devices
+    # Mount USB devices (Linux only - does NOT work on macOS)
+    # On macOS, Docker runs in a VM and cannot access host USB devices
     devices:
+      # Linux examples:
       - /dev/ttyUSB0:/dev/ttyUSB0
-      # Add more devices as needed
       # - /dev/ttyACM0:/dev/ttyACM0
+      # macOS devices (will NOT work in Docker):
       # - /dev/cu.usbmodem*:/dev/cu.usbmodem*
 
     # Volume mounts
@@ -32,7 +40,7 @@ services:
       # Plugin selection - use plugin filename
       # Leave empty for interactive mode
       # Examples: plugin_clock, plugin_metrics, plugin_sample
-      - PLUGIN_FILE=plugin_metrics
+      - PLUGIN_FILE=plugin_metrics_rotated
 
     # Restart policy
     restart: unless-stopped

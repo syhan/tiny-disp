@@ -58,19 +58,110 @@ docker stop tiny-disp
 docker rm tiny-disp
 ```
 
+## ⚠️ 重要提示：macOS 限制
+
+### macOS 上无法使用 Docker 访问 USB 设备
+
+**Docker Desktop for Mac 的架构限制：**
+
+- Docker Desktop for Mac 运行在 **轻量级虚拟机** (HyperKit/QEMU) 中
+- 虚拟机无法直接访问宿主机的 USB 设备
+- `/dev/cu.*` 设备无法传递到容器内
+- 即使使用 `--privileged` 和 `devices` 参数也**无法工作**
+
+### macOS 用户的解决方案
+
+#### 方案1: 直接在 macOS 上运行（推荐）✅
+
+```bash
+# 1. 安装依赖
+pip3 install -r requirements.txt
+
+# 2. 配置文件
+cp .tiny-disp.conf.sample .tiny-disp.conf
+nano .tiny-disp.conf
+
+# 3. 运行程序
+python3 main.py --plugin plugin_clock
+```
+
+#### 方案2: 使用 Linux 虚拟机 + USB 直通
+
+使用支持 USB 直通的虚拟机：
+
+1. **VMware Fusion**（商业软件）
+   ```bash
+   # 在虚拟机中运行 Docker
+   # 配置 USB 直通到虚拟机
+   ```
+
+2. **Parallels Desktop**（商业软件）
+   ```bash
+   # 支持 USB 设备直通
+   ```
+
+3. **VirtualBox**（免费）
+   ```bash
+   # 配置 USB 过滤器
+   # 将设备直通到虚拟机
+   ```
+
+#### 方案3: 使用网络串口服务器
+
+通过网络共享串口设备：
+
+```bash
+# 在 macOS 上运行串口服务器
+socat TCP-LISTEN:3333,reuseaddr,fork /dev/cu.usbmodem123456
+
+# 在 Docker 容器中连接
+socat PTY,link=/dev/ttyUSB0 TCP:host.docker.internal:3333
+```
+
+#### 方案4: 远程部署（生产环境推荐）
+
+将 Docker 部署到 Linux 服务器：
+
+```bash
+# 1. 在 Linux 服务器上
+git clone <repository>
+cd tiny-disp
+docker-compose up -d
+
+# 2. USB 设备连接到 Linux 服务器
+# 3. Docker 可以正常访问 USB 设备
+```
+
 ## 🔧 配置说明
 
 ### USB 设备映射
 
-不同系统的设备路径不同：
+**⚠️ 仅适用于 Linux 系统**
+
+不同 Linux 发行版的设备路径：
 
 ```yaml
-# Linux
+# Ubuntu/Debian
 devices:
   - /dev/ttyUSB0:/dev/ttyUSB0
   - /dev/ttyACM0:/dev/ttyACM0
 
-# macOS
+# CentOS/RHEL
+devices:
+  - /dev/ttyUSB0:/dev/ttyUSB0
+
+# Raspberry Pi
+devices:
+  - /dev/ttyACM0:/dev/ttyACM0
+```
+
+**macOS 设备路径（仅供参考，Docker 中无法使用）：**
+```bash
+# macOS 设备路径
+/dev/cu.usbmodem*
+/dev/cu.usbserial*
+
+# ❌ 以下配置在 macOS Docker 中无效
 devices:
   - /dev/cu.usbmodem01234567891:/dev/cu.usbmodem01234567891
 ```
